@@ -12,17 +12,17 @@ export const CONFIG = {
 
   dns: {
     // TODO: Replace with your actual Route53 hosted zone ID
-    hostedZoneId: 'Z1234567890ABC',
+    hostedZoneId: 'Z08606083CKBAN2V5VVVT',
     // TODO: Replace with your actual domain name
-    hostedZoneName: 'example.com',
+    hostedZoneName: 'justmakeit.click',
     subdomainName: 'notebooks',
   },
 
   okta: {
     // TODO: Replace with your Okta organization URL
-    issuer: 'https://your-org.okta.com/oauth2/default',
-    clientIdSecretName: 'mplat/okta/client-id',
-    clientSecretSecretName: 'mplat/okta/client-secret',
+    issuer: 'https://integrator-6693679.okta.com/oauth2/default',
+    clientIdSecretName: 'marimo-platform/okta/client-id',
+    clientSecretSecretName: 'marimo-platform/okta/client-secret',
   },
 
   storage: {
