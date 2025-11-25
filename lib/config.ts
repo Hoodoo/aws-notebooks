@@ -1,6 +1,11 @@
 export const CONFIG = {
-  projectName: 'mplat',
+  projectName: 'marimo-platform',
   projectFullName: 'marimo-platform',
+
+  env: {
+    account: '564175397198',
+    region: 'eu-west-2',
+  },
 
   tags: {
     Project: 'marimo-platform',

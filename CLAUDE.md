@@ -286,3 +286,4 @@ Before deploying ComputeStack, ensure:
 2. Redirect URI is set to: `https://{subdomain}.{domain}/oauth2/idpresponse`
 3. Client ID and Client Secret are stored in AWS Secrets Manager
 4. Authorization server issuer URL is configured in `config.ts`
+- project name is not mplat, it's marimo-platform
