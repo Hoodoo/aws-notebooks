@@ -6,7 +6,7 @@ import { CONFIG } from '../lib/config';
 // Stacks will be imported and instantiated here as we build them
 import { NetworkStack } from '../lib/network-stack';
 import { DnsStack } from '../lib/dns-stack';
-// import { StorageStack } from '../lib/storage-stack';
+import { StorageStack } from '../lib/storage-stack';
 // import { SecretsAndIamStack } from '../lib/secrets-iam-stack';
 // import { ComputeStack } from '../lib/compute-stack';
 // import { IngestionStack } from '../lib/ingestion-stack';
@@ -44,6 +44,15 @@ const dnsStack = new DnsStack(app, `${CONFIG.projectName}-${environment}-dns`, {
 });
 
 // 3. StorageStack
+const storageStack = new StorageStack(app, `${CONFIG.projectName}-${environment}-storage`, {
+  env,
+  environment,
+  vpc: networkStack.vpc,
+  efsSecurityGroup: networkStack.efsSecurityGroup,
+  description: `Storage resources (S3, EFS) for ${CONFIG.projectFullName}`,
+});
+storageStack.addDependency(networkStack);
+
 // 4. SecretsAndIamStack
 // 5. ComputeStack
 // 6. IngestionStack
