@@ -284,6 +284,73 @@ export const CONFIG = {
 Before deploying ComputeStack, ensure:
 1. Okta application is created with Web application type
 2. Redirect URI is set to: `https://{subdomain}.{domain}/oauth2/idpresponse`
-3. Client ID and Client Secret are stored in AWS Secrets Manager
+3. Client ID and Client Secret are stored in AWS Secrets Manager (see Secret Management below)
 4. Authorization server issuer URL is configured in `config.ts`
-- project name is not mplat, it's marimo-platform
+
+## Secret Management
+
+**IMPORTANT:** This project does NOT create secrets with placeholder values. Your team is responsible for creating and managing all secrets before deployment.
+
+### Required Secrets for Initial Deployment
+
+Before deploying the stacks, you must manually create the following secrets in AWS Secrets Manager:
+
+#### 1. Okta OAuth Credentials (Required for ComputeStack)
+
+**Client ID Secret:**
+```bash
+aws secretsmanager create-secret \
+  --name marimo-platform/okta/client-id \
+  --description "Okta OAuth2 Client ID" \
+  --secret-string "YOUR_OKTA_CLIENT_ID" \
+  --region eu-west-2
+```
+
+**Client Secret:**
+```bash
+aws secretsmanager create-secret \
+  --name marimo-platform/okta/client-secret \
+  --description "Okta OAuth2 Client Secret" \
+  --secret-string "YOUR_OKTA_CLIENT_SECRET" \
+  --region eu-west-2
+```
+
+### Secrets Created Automatically
+
+The following secrets are created automatically during deployment:
+
+#### On-Premise Device Credentials
+- **Secret Name:** `marimo-platform/{environment}/onpremise/credentials`
+- **Contains:** AWS access key ID and secret access key for the on-premise IAM user
+- **Purpose:** Use these credentials on on-premise devices to upload data to the raw data bucket
+- **Retrieve after deployment:**
+```bash
+aws secretsmanager get-secret-value \
+  --secret-id marimo-platform/dev/onpremise/credentials \
+  --region eu-west-2 \
+  --query SecretString \
+  --output text
+```
+
+### Adding API Ingestion Secrets
+
+When adding new API ingestion functions, store API credentials under the prefix `marimo-platform/api/`:
+
+**Example:**
+```bash
+aws secretsmanager create-secret \
+  --name marimo-platform/api/weather-api \
+  --description "Weather API credentials" \
+  --secret-string '{"apiKey":"YOUR_API_KEY","apiUrl":"https://api.weather.com"}' \
+  --region eu-west-2
+```
+
+Lambda functions will automatically have read access to any secrets under `marimo-platform/api/*`.
+
+### Secret Naming Convention
+
+All secrets follow this pattern:
+- Okta secrets: `marimo-platform/okta/{secret-name}`
+- On-premise credentials: `marimo-platform/{environment}/onpremise/credentials`
+- API secrets: `marimo-platform/api/{api-name}`
+- General secrets: `marimo-platform/{category}/{secret-name}`

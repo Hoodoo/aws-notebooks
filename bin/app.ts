@@ -7,7 +7,7 @@ import { CONFIG } from '../lib/config';
 import { NetworkStack } from '../lib/network-stack';
 import { DnsStack } from '../lib/dns-stack';
 import { StorageStack } from '../lib/storage-stack';
-// import { SecretsAndIamStack } from '../lib/secrets-iam-stack';
+import { SecretsAndIamStack } from '../lib/secrets-iam-stack';
 // import { ComputeStack } from '../lib/compute-stack';
 // import { IngestionStack } from '../lib/ingestion-stack';
 
@@ -54,6 +54,15 @@ const storageStack = new StorageStack(app, `${CONFIG.projectName}-${environment}
 storageStack.addDependency(networkStack);
 
 // 4. SecretsAndIamStack
+const secretsIamStack = new SecretsAndIamStack(app, `${CONFIG.projectName}-${environment}-secrets-iam`, {
+  env,
+  environment,
+  rawDataBucket: storageStack.rawDataBucket,
+  derivedDataBucket: storageStack.derivedDataBucket,
+  description: `IAM roles and secrets management for ${CONFIG.projectFullName}`,
+});
+secretsIamStack.addDependency(storageStack);
+
 // 5. ComputeStack
 // 6. IngestionStack
 
