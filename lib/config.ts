@@ -1,0 +1,36 @@
+export const CONFIG = {
+  projectName: 'mplat',
+  projectFullName: 'marimo-platform',
+
+  tags: {
+    Project: 'marimo-platform',
+    ManagedBy: 'cdk',
+    Owner: 'data-team',
+    IaC: 'true',
+    Repository: 'aws-notebooks'
+  },
+
+  dns: {
+    // TODO: Replace with your actual Route53 hosted zone ID
+    hostedZoneId: 'Z1234567890ABC',
+    // TODO: Replace with your actual domain name
+    hostedZoneName: 'example.com',
+    subdomainName: 'notebooks',
+  },
+
+  okta: {
+    // TODO: Replace with your Okta organization URL
+    issuer: 'https://your-org.okta.com/oauth2/default',
+    clientIdSecretName: 'mplat/okta/client-id',
+    clientSecretSecretName: 'mplat/okta/client-secret',
+  },
+
+  storage: {
+    rawDataLifecycle: {
+      transitionToIA: 90,
+      transitionToGlacier: 180,
+      transitionToDeepArchive: 365
+    },
+    scratchSizeGB: 2
+  }
+};
