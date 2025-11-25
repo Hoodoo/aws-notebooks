@@ -9,6 +9,8 @@ export interface SecretsAndIamStackProps extends cdk.StackProps {
   environment: string;
   rawDataBucket: s3.IBucket;
   derivedDataBucket: s3.IBucket;
+  fileSystemId?: string;
+  accessPointId?: string;
 }
 
 export class SecretsAndIamStack extends cdk.Stack {
@@ -21,7 +23,7 @@ export class SecretsAndIamStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: SecretsAndIamStackProps) {
     super(scope, id, props);
 
-    const { environment, rawDataBucket, derivedDataBucket } = props;
+    const { environment, rawDataBucket, derivedDataBucket, fileSystemId, accessPointId } = props;
 
     // Apply stack-specific tags
     cdk.Tags.of(this).add('Component', 'iam');
@@ -44,8 +46,8 @@ export class SecretsAndIamStack extends cdk.Stack {
         'secretsmanager:GetSecretValue',
       ],
       resources: [
-        `arn:aws:secretsmanager:${CONFIG.env.region}:${CONFIG.env.account}:secret:${CONFIG.okta.clientIdSecretName}*`,
-        `arn:aws:secretsmanager:${CONFIG.env.region}:${CONFIG.env.account}:secret:${CONFIG.okta.clientSecretSecretName}*`,
+        CONFIG.okta.clientIdSecretArn,
+        CONFIG.okta.clientSecretSecretArn,
       ],
     }));
 
@@ -61,6 +63,25 @@ export class SecretsAndIamStack extends cdk.Stack {
 
     // Grant read/write access to derived data bucket
     derivedDataBucket.grantReadWrite(this.fargateTaskRole);
+
+    // Grant EFS permissions if filesystem is provided
+    if (fileSystemId && accessPointId) {
+      this.fargateTaskRole.addToPolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'elasticfilesystem:ClientMount',
+          'elasticfilesystem:ClientWrite',
+        ],
+        resources: [
+          `arn:aws:elasticfilesystem:${CONFIG.env.region}:${CONFIG.env.account}:file-system/${fileSystemId}`,
+        ],
+        conditions: {
+          StringEquals: {
+            'elasticfilesystem:AccessPointArn': `arn:aws:elasticfilesystem:${CONFIG.env.region}:${CONFIG.env.account}:access-point/${accessPointId}`,
+          },
+        },
+      }));
+    }
 
     // Lambda Execution Role (basic Lambda execution for API ingestion)
     this.lambdaExecutionRole = new iam.Role(this, 'LambdaExecutionRole', {

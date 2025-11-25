@@ -315,6 +315,22 @@ aws secretsmanager create-secret \
   --region eu-west-2
 ```
 
+**After creating the secrets, update `lib/config.ts` with the full ARNs:**
+```bash
+# Retrieve the ARNs
+aws secretsmanager describe-secret --secret-id marimo-platform/okta/client-id --region eu-west-2 --query ARN --output text
+aws secretsmanager describe-secret --secret-id marimo-platform/okta/client-secret --region eu-west-2 --query ARN --output text
+```
+
+Then update `lib/config.ts`:
+```typescript
+okta: {
+  issuer: 'https://your-org.okta.com/oauth2/default',
+  clientIdSecretArn: 'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-id-abc123',
+  clientSecretSecretArn: 'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-secret-xyz789',
+}
+```
+
 ### Secrets Created Automatically
 
 The following secrets are created automatically during deployment:

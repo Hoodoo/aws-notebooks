@@ -67,6 +67,22 @@ To get these values:
 3. Set redirect URI to: `https://notebooks.justmakeit.click/oauth2/idpresponse`
 4. Copy the Client ID and Client Secret
 
+After creating the secrets, **update `lib/config.ts`** with the full secret ARNs:
+```bash
+# Get the secret ARNs
+aws secretsmanager describe-secret --secret-id marimo-platform/okta/client-id --region eu-west-2 --query ARN
+aws secretsmanager describe-secret --secret-id marimo-platform/okta/client-secret --region eu-west-2 --query ARN
+```
+
+Then update in `lib/config.ts`:
+```typescript
+okta: {
+  issuer: 'https://your-org.okta.com/oauth2/default',
+  clientIdSecretArn: 'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-id-abc123',
+  clientSecretSecretArn: 'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-secret-xyz789',
+}
+```
+
 ## Deployment
 
 ### Install Dependencies

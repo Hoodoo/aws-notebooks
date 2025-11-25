@@ -24,12 +24,13 @@ export const CONFIG = {
   },
 
   okta: {
-    // TODO: Replace with your Okta organization URL
     issuer: 'https://integrator-6693679.okta.com/oauth2/default',
-    clientIdSecretName: 'marimo-platform/okta/client-id',
-    clientSecretSecretName: 'marimo-platform/okta/client-secret',
+    clientIdSecretArn:
+  'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-id-xz38e2',
+    clientSecretSecretArn:
+  'arn:aws:secretsmanager:eu-west-2:564175397198:secret:marimo-platform/okta/client-secret-7g2wtE',
   },
-
+  
   storage: {
     rawDataLifecycle: {
       transitionToIA: 90,

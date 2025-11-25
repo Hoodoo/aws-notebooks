@@ -8,7 +8,7 @@ import { NetworkStack } from '../lib/network-stack';
 import { DnsStack } from '../lib/dns-stack';
 import { StorageStack } from '../lib/storage-stack';
 import { SecretsAndIamStack } from '../lib/secrets-iam-stack';
-// import { ComputeStack } from '../lib/compute-stack';
+import { ComputeStack } from '../lib/compute-stack';
 // import { IngestionStack } from '../lib/ingestion-stack';
 
 const app = new cdk.App();
@@ -59,11 +59,33 @@ const secretsIamStack = new SecretsAndIamStack(app, `${CONFIG.projectName}-${env
   environment,
   rawDataBucket: storageStack.rawDataBucket,
   derivedDataBucket: storageStack.derivedDataBucket,
+  fileSystemId: storageStack.fileSystem.fileSystemId,
+  accessPointId: storageStack.accessPoint.accessPointId,
   description: `IAM roles and secrets management for ${CONFIG.projectFullName}`,
 });
 secretsIamStack.addDependency(storageStack);
 
 // 5. ComputeStack
+const computeStack = new ComputeStack(app, `${CONFIG.projectName}-${environment}-compute`, {
+  env,
+  environment,
+  vpc: networkStack.vpc,
+  albSecurityGroup: networkStack.albSecurityGroup,
+  fargateSecurityGroup: networkStack.fargateSecurityGroup,
+  hostedZone: dnsStack.hostedZone,
+  certificate: dnsStack.certificate,
+  domainName: dnsStack.domainName,
+  fileSystem: storageStack.fileSystem,
+  accessPoint: storageStack.accessPoint,
+  taskExecutionRole: secretsIamStack.fargateTaskExecutionRole,
+  taskRole: secretsIamStack.fargateTaskRole,
+  description: `Compute resources (ALB, Fargate) for ${CONFIG.projectFullName}`,
+});
+computeStack.addDependency(networkStack);
+computeStack.addDependency(dnsStack);
+computeStack.addDependency(storageStack);
+computeStack.addDependency(secretsIamStack);
+
 // 6. IngestionStack
 
 app.synth();
