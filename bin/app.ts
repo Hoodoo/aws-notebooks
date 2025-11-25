@@ -5,7 +5,7 @@ import { CONFIG } from '../lib/config';
 
 // Stacks will be imported and instantiated here as we build them
 import { NetworkStack } from '../lib/network-stack';
-// import { DnsStack } from '../lib/dns-stack';
+import { DnsStack } from '../lib/dns-stack';
 // import { StorageStack } from '../lib/storage-stack';
 // import { SecretsAndIamStack } from '../lib/secrets-iam-stack';
 // import { ComputeStack } from '../lib/compute-stack';
@@ -37,6 +37,12 @@ const networkStack = new NetworkStack(app, `${CONFIG.projectName}-${environment}
 });
 
 // 2. DnsStack
+const dnsStack = new DnsStack(app, `${CONFIG.projectName}-${environment}-dns`, {
+  env,
+  environment,
+  description: `DNS and certificate management for ${CONFIG.projectFullName}`,
+});
+
 // 3. StorageStack
 // 4. SecretsAndIamStack
 // 5. ComputeStack
